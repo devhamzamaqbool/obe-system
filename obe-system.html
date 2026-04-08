@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBE Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --success: #10b981;
+            --danger: #ef4444;
+            --light-bg: #f8fafc;
+            --text-main: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        *:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 50%
+            }
+
+            50% {
+                background-position: 100% 50%
+            }
+
+            100% {
+                background-position: 0% 50%
+            }
+        }
+
+        .animate-up {
+            animation: fadeIn 0.45s ease-out;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        /* AUTH */
+
+        #auth-view {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(15, 23, 42, .72), rgba(67, 97, 238, .55)), url('https://usp.edu.pk/wp-content/uploads/2025/07/1920x1080.jpg') center/cover no-repeat;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            padding: 16px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, .97);
+            padding: 40px 36px;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, .35);
+            animation: fadeIn .7s ease-out;
+        }
+
+        .auth-tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            color: #94a3b8;
+            border-bottom: 3px solid transparent;
+            transition: .2s;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: .9rem;
+        }
+
+        .auth-tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .iw {
+            position: relative;
+        }
+
+        .iw i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .iw input {
+            padding-left: 38px;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #4361ee, #3f37c9);
+            border: none;
+            height: 50px;
+            font-weight: 600;
+            color: #fff;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: .2s;
+            cursor: pointer;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, .4);
+        }
+
+        /* LAYOUT */
+
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        #sidebar {
+            width: 230px;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: linear-gradient(180deg, #020617 0%, #0f172a 40%, #1e293b 100%);
+            background-size: 200% 200%;
+            animation: gradientFlow 15s ease infinite;
+            color: #fff;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, .15);
+            display: flex;
+            flex-direction: column;
+            transition: .3s;
+            overflow-y: auto;
+        }
+
+        .brand {
+            padding: 28px 22px 10px;
+            text-align: center;
+        }
+
+        .brand h5 {
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-size: 1rem;
+        }
+
+        .dept-switcher {
+            padding: 10px 18px 18px;
+        }
+
+        #global-dept-select {
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, .2);
+        }
+
+        #global-dept-select option {
+            background: #2c3e50;
+        }
+
+        .sidebar-menu {
+            padding: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item-link {
+            padding: 11px 18px;
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, .7);
+            text-decoration: none;
+            transition: .2s;
+            font-weight: 500;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item-link:hover {
+            background: rgba(255, 255, 255, .06);
+            color: #fff;
+            padding-left: 22px;
+        }
+
+        .nav-item-link.active {
+            background: rgba(255, 255, 255, .09);
+            color: #fff;
+            border-left-color: var(--accent);
+        }
+
+        .nav-item-link i {
+            width: 24px;
+            text-align: center;
+            margin-right: 10px;
+        }
+
+        .sidebar-user-info {
+            padding: 14px 18px;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .sidebar-user-info .uname {
+            color: #fff;
+            font-weight: 600;
+            font-size: .85rem;
+        }
+
+        .sidebar-user-info .urole {
+            color: rgba(255, 255, 255, .5);
+            font-size: .75rem;
+        }
+
+        /* CONTENT */
+
+        #content {
+            margin-left: 230px;
+            padding: 28px 36px;
+            width: calc(100% - 230px);
+            min-height: 100vh;
+        }
+
+        /* MOBILE TOP BAR */
+
+        #mobile-topbar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 998;
+            background: linear-gradient(90deg, #020617, #1e293b);
+            padding: 10px 16px;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .3);
+        }
+
+        #mobile-topbar h6 {
+            color: #fff;
+            margin: 0;
+            font-size: .95rem;
+            font-weight: 600;
+        }
+
+        #mobile-topbar p {
+            color: rgba(255, 255, 255, .55);
+            margin: 0;
+            font-size: .72rem;
+        }
+
+        /* OVERLAY */
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* CARDS */
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+            transition: .3s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .09);
+        }
+
+        .stat-card {
+            padding: 20px;
+            text-align: center;
+            border-left: 5px solid;
+        }
+
+        .stat-border-1 {
+            border-left-color: var(--primary)
+        }
+
+        .stat-border-2 {
+            border-left-color: #0dcaf0
+        }
+
+        .stat-border-3 {
+            border-left-color: #f59e0b
+        }
+
+        .stat-border-4 {
+            border-left-color: var(--danger)
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* TABLES */
+
+        .table {
+            vertical-align: middle;
+            font-size: .88rem;
+        }
+
+        .table thead th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: .78rem;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .badge-C1,
+        .badge-C2 {
+            background: #3498db;
+            color: #fff;
+            border-radius: 4px;
+            padding: 2px 7px;
+        }
+
+        .badge-C3,
+        .badge-C4 {
+            background: #f1c40f;
+            color: #000;
+            border-radius: 4px;
+            padding: 2px 7px;
+        }
+
+        .badge-C5,
+        .badge-C6 {
+            background: #e74c3c;
+            color: #fff;
+            border-radius: 4px;
+            padding: 2px 7px;
+        }
+
+        .matrix-head th {
+            text-align: center;
+            font-size: .8rem;
+            vertical-align: middle;
+            background: #343a40;
+            color: #fff;
+        }
+
+        .matrix-cell {
+            text-align: center;
+            vertical-align: middle;
+            font-size: 1.1rem;
+        }
+
+        .icon-btn {
+            cursor: pointer;
+            padding: 5px;
+            transition: .2s;
+            opacity: .7;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.2);
+            opacity: 1;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: .9rem;
+            white-space: nowrap;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            background: transparent;
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+        }
+
+        .nav-tabs {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* SECTION HEADER */
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section-header h4 {
+            margin: 0;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        /* USER MANAGEMENT */
+
+        .role-pill {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        .pill-admin {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .pill-faculty {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+
+            #sidebar.active {
+                transform: translateX(0);
+            }
+
+            #content {
+                margin-left: 0;
+                width: 100%;
+                padding: 72px 12px 24px;
+            }
+
+            #mobile-topbar {
+                display: flex;
+            }
+
+            .table {
+                font-size: .78rem;
+            }
+
+            .table thead th {
+                font-size: .7rem;
+            }
+
+            .stat-value {
+                font-size: 1.7rem;
+            }
+
+            .login-card {
+                padding: 28px 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-tab-btn {
+                padding: 8px 12px;
+                font-size: .82rem;
+            }
+
+            #content {
+                padding: 66px 10px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOADER -->
+    <div id="loader"
+        style="position:fixed;inset:0;background:#f8fafc;z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div class="spinner-border text-primary" style="width:3rem;height:3rem;" role="status"></div>
+    </div>
+
+    <!-- AUTH VIEW -->
+    <div id="auth-view">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <i class="fas fa-graduation-cap fa-3x text-primary mb-2"></i>
+                <h4 class="fw-bold text-dark mb-0">OBE Manager</h4>
+                <p class="text-muted small mb-0">Departmental Portal</p>
+            </div>
+            <div class="d-flex border-bottom mb-4">
+                <button class="auth-tab-btn active" id="tab-login-btn" onclick="Auth.switchTab('login')">Sign
+                    In</button>
+                <!-- <button class="auth-tab-btn" id="tab-register-btn"
+                    onclick="Auth.switchTab('register')">Register</button> -->
+            </div>
+
+            <!-- LOGIN -->
+            <div id="tab-login">
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1">USERNAME</label>
+                    <div class="iw"><i class="fas fa-user"></i><input id="login-user" type="text" class="form-control"
+                            placeholder="Enter username" onkeydown="if(event.key==='Enter')Auth.login()"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1">PASSWORD</label>
+                    <div class="iw"><i class="fas fa-lock"></i><input id="login-pass" type="password"
+                            class="form-control" placeholder="Enter password"
+                            onkeydown="if(event.key==='Enter')Auth.login()"></div>
+                </div>
+                <div id="login-error" class="alert alert-danger py-2 hide" style="font-size:.83rem;border-radius:8px;">
+                </div>
+                <button class="btn-login mt-1" onclick="Auth.login()">Sign In &nbsp;<i
+                        class="fas fa-arrow-right"></i></button>
+                <p class="text-center text-muted small mt-3 mb-0">Default admin: <strong>admin</strong> /
+                    <strong>admin123</strong>
+                </p>
+            </div>
+
+            <!-- REGISTER -->
+            <div id="tab-register" class="hide">
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1">FULL NAME</label>
+                    <div class="iw"><i class="fas fa-id-card"></i><input id="reg-name" type="text" class="form-control"
+                            placeholder="Your full name"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1">USERNAME</label>
+                    <div class="iw"><i class="fas fa-user"></i><input id="reg-user" type="text" class="form-control"
+                            placeholder="Choose a username"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1">PASSWORD</label>
+                    <div class="iw"><i class="fas fa-lock"></i><input id="reg-pass" type="password" class="form-control"
+                            placeholder="Min 6 characters"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1">ROLE</label>
+                    <select id="reg-role" class="form-select">
+                        <option value="faculty">Faculty Member</option>
+                        <option value="admin">Administrator / HOD</option>
+                    </select>
+                </div>
+                <div id="reg-error" class="alert alert-danger py-2 hide" style="font-size:.83rem;border-radius:8px;">
+                </div>
+                <div id="reg-success" class="alert alert-success py-2 hide" style="font-size:.83rem;border-radius:8px;">
+                </div>
+                <button class="btn-login" onclick="Auth.register()">Create Account &nbsp;<i
+                        class="fas fa-user-plus"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE TOP BAR -->
+    <div id="mobile-topbar">
+        <button class="btn btn-sm btn-outline-light border-0" onclick="App.toggleMenu()"><i
+                class="fas fa-bars fa-lg"></i></button>
+        <div>
+            <h6 id="mob-title">OBE Suite</h6>
+            <p id="mob-dept">Select department</p>
+        </div>
+    </div>
+
+    <!-- MAIN VIEW -->
+    <div id="main-view" class="wrapper hide">
+
+        <nav id="sidebar">
+            <div class="brand">
+                <h5>OBE SUITE</h5>
+                <small id="user-badge" class="badge bg-success mt-1">Online</small>
+            </div>
+            <div class="dept-switcher">
+                <label class="text-white-50 small mb-1 fw-bold d-block">DEPARTMENT</label>
+                <div class="d-flex gap-2">
+                    <select id="global-dept-select" class="form-select form-select-sm" onchange="App.changeDept()">
+                        <option value="">Select...</option>
+                    </select>
+                    <button id="btn-add-dept" class="btn btn-sm btn-outline-light" onclick="App.showModal('dept')"
+                        title="Manage Departments"><i class="fas fa-cog"></i></button>
+                </div>
+            </div>
+            <div class="sidebar-menu">
+                <a onclick="App.nav('dashboard')" id="nav-dashboard" class="nav-item-link active"><i
+                        class="fas fa-th-large"></i> Dashboard</a>
+                <a onclick="App.nav('curriculum')" id="nav-curriculum" class="nav-item-link"><i class="fas fa-book"></i>
+                    Curriculum</a>
+                <a onclick="App.nav('mapping')" id="nav-mapping" class="nav-item-link"><i
+                        class="fas fa-project-diagram"></i> Mapping</a>
+                <a onclick="App.nav('assessment')" id="nav-assessment" class="nav-item-link"><i
+                        class="fas fa-chart-line"></i> Assessments</a>
+                <a onclick="App.nav('cqi')" id="nav-cqi" class="nav-item-link"><i class="fas fa-clipboard-check"></i>
+                    CQI Reports</a>
+                <a onclick="App.nav('users')" id="nav-users" class="nav-item-link"><i class="fas fa-users-cog"></i> User
+                    Management</a>
+            </div>
+            <div class="sidebar-user-info">
+                <div class="uname" id="sidebar-uname">—</div>
+                <div class="urole" id="sidebar-urole">—</div>
+                <a onclick="Auth.logout()" class="nav-item-link text-danger mt-2 px-0"><i
+                        class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </nav>
+
+        <div class="overlay" onclick="App.toggleMenu()"></div>
+
+        <div id="content">
+
+            <!-- DASHBOARD -->
+            <div id="page-dashboard" class="animate-up">
+                <div class="section-header">
+                    <h4>Department Overview</h4>
+                    <span class="badge bg-white text-dark border shadow-sm px-3 py-2" id="dash-dept-label">Select a
+                        Dept</span>
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3">
+                        <div class="card stat-card stat-border-1">
+                            <div class="stat-value" id="stat-courses">0</div><small class="text-muted">Courses</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card stat-card stat-border-2">
+                            <div class="stat-value" id="stat-plos">0</div><small class="text-muted">PLOs</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card stat-card stat-border-3">
+                            <div class="stat-value" id="stat-assess">0</div><small
+                                class="text-muted">Assessments</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card stat-card stat-border-4">
+                            <div class="stat-value text-danger" id="stat-cqi">0</div><small class="text-muted">Pending
+                                CQI</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-12 col-md-8">
+                        <div class="card p-4">
+                            <h5 class="mb-3 fw-bold" style="font-size:1rem;">Average PLO Attainment</h5>
+                            <div style="position:relative;height:260px;"><canvas id="ploChart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card p-4">
+                            <h5 class="mb-3 fw-bold" style="font-size:1rem;">System Status</h5>
+                            <ul id="alert-list" class="list-group list-group-flush mt-1"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CURRICULUM -->
+            <div id="page-curriculum" class="hide animate-up">
+                <div class="section-header">
+                    <h4>Curriculum Setup</h4>
+                </div>
+                <ul class="nav nav-tabs mb-3">
+                    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-c">Courses</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-p">PLOs</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-l">CLOs</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="tab-c">
+                        <button id="btn-add-course" class="btn btn-primary btn-sm shadow-sm mb-3"
+                            onclick="App.showModal('course')">+ Add Course</button>
+                        <div class="card p-3">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Name</th>
+                                            <th>Cr</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbl-courses"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-p">
+                        <button id="btn-add-plo" class="btn btn-primary btn-sm shadow-sm mb-3"
+                            onclick="App.showModal('plo')">+ Add PLO</button>
+                        <div class="card p-3">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Description</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbl-plos"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-l">
+                        <button id="btn-add-clo" class="btn btn-primary btn-sm shadow-sm mb-3"
+                            onclick="App.showModal('clo')">+ Add CLO</button>
+                        <div class="card p-3">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Bloom's</th>
+                                            <th>Desc</th>
+                                            <th>Course</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbl-clos"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAPPING -->
+            <div id="page-mapping" class="hide animate-up">
+                <div class="section-header">
+                    <h4>Mapping &amp; Alignment</h4>
+                </div>
+                <ul class="nav nav-tabs mb-3">
+                    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#map-assign">Assignment
+                            Tool</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#map-visual"
+                            id="tab-visual-trigger">Visual Matrix</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="map-assign">
+                        <div class="card p-3">
+                            <div class="d-flex flex-wrap justify-content-between mb-3 align-items-end gap-2">
+                                <div style="min-width:200px;flex:1;">
+                                    <label class="small text-muted mb-1 fw-bold">Select Course</label>
+                                    <select id="select-map-course" class="form-select shadow-sm"
+                                        onchange="App.renderMap()"></select>
+                                </div>
+                                <div id="map-actions" class="d-flex gap-2 flex-wrap">
+                                    <button class="btn btn-outline-success btn-sm" onclick="App.showModal('plo')">+ New
+                                        PLO</button>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="App.showModal('clo')">+ New
+                                        CLO</button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover border mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>CLO Detail</th>
+                                            <th>Mapped PLO</th>
+                                            <th>Status</th>
+                                            <th>Clear</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbl-mapping"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="map-visual">
+                        <div class="card p-3">
+                            <label class="mb-1 small text-muted fw-bold">View Course</label>
+                            <select id="select-matrix-course" class="form-select mb-3 shadow-sm"
+                                onchange="App.renderMatrix()"></select>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm text-center mb-0">
+                                    <thead class="matrix-head" id="matrix-head"></thead>
+                                    <tbody id="matrix-body"></tbody>
+                                </table>
+                            </div>
+                            <div id="matrix-legend" class="mt-3 p-3 bg-light border rounded small text-muted"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ASSESSMENTS -->
+            <div id="page-assessment" class="hide animate-up">
+                <div class="section-header">
+                    <h4>Assessments</h4>
+                </div>
+                <div class="card p-4 mb-4">
+                    <h6 class="text-muted mb-3 fw-bold">New Entry</h6>
+                    <form onsubmit="App.addAssessment(event)">
+                        <div class="row g-3">
+                            <div class="col-12 col-sm-6 col-md-4"><label
+                                    class="small fw-bold text-muted">Title</label><input type="text"
+                                    id="in-assess-title" class="form-control" required></div>
+                            <div class="col-12 col-sm-6 col-md-4"><label
+                                    class="small fw-bold text-muted">Course</label><select id="in-assess-course"
+                                    class="form-select" onchange="App.filterCLOs()" required></select></div>
+                            <div class="col-12 col-sm-6 col-md-4"><label
+                                    class="small fw-bold text-muted">CLO</label><select id="in-assess-clo"
+                                    class="form-select" required></select></div>
+                            <div class="col-12 col-sm-6 col-md-4"><label class="small fw-bold text-muted">Total
+                                    Students</label><input type="number" id="in-assess-total" class="form-control"
+                                    required></div>
+                            <div class="col-12 col-sm-6 col-md-4"><label
+                                    class="small fw-bold text-muted">Passed</label><input type="number"
+                                    id="in-assess-pass" class="form-control" required></div>
+                            <div class="col-12 col-sm-6 col-md-4 d-grid align-items-end"><button type="submit"
+                                    class="btn btn-primary shadow-sm">Save Result</button></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <h6 class="fw-bold m-0">History Log</h6>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="App.toggleSort()" id="btn-sort">Sort:
+                            Oldest First ⬇</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>CLO</th>
+                                    <th>Result</th>
+                                    <th>Status</th>
+                                    <th>Del</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl-history"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CQI -->
+            <div id="page-cqi" class="hide animate-up">
+                <div class="section-header">
+                    <h4>CQI Management</h4>
+                </div>
+                <div id="cqi-list" class="row g-3"></div>
+            </div>
+
+            <!-- USER MANAGEMENT -->
+            <div id="page-users" class="hide animate-up">
+                <div class="section-header">
+                    <h4>User Management</h4>
+                    <button class="btn btn-primary btn-sm shadow-sm" onclick="Auth.showAddUserModal()"><i
+                            class="fas fa-user-plus me-1"></i>Add User</button>
+                </div>
+                <div class="card p-3">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl-users-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /content -->
+    </div>
+    <!-- /wrapper -->
+
+    <!-- MODALS -->
+
+    <!-- Dept Modal -->
+    <div class="modal fade" id="modal-dept">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold">Manage Departments</h5><button class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <input id="in-dept-name" class="form-control" placeholder="New Department Name"
+                            onkeydown="if(event.key==='Enter')App.addDept()">
+                        <button class="btn btn-success" onclick="App.addDept()"><i
+                                class="fas fa-plus me-1"></i>Add</button>
+                    </div>
+                    <ul class="list-group list-group-flush" id="dept-list-manage"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Modal -->
+    <div class="modal fade" id="mainModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold" id="modalTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-3" id="modalBody"></div>
+                <div class="modal-footer border-0 pt-0"><button onclick="App.saveData()"
+                        class="btn btn-primary w-100">Save</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CQI Modal -->
+    <div class="modal fade" id="cqiModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="mb-0">Report Failure</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="cqi-ref">
+                    <label class="fw-bold small text-muted mb-1">Root Cause</label>
+                    <textarea id="cqi-cause" class="form-control mb-3" rows="3"
+                        placeholder="Why did students fail?"></textarea>
+                    <label class="fw-bold small text-muted mb-1">Action Plan</label>
+                    <textarea id="cqi-plan" class="form-control" rows="3" placeholder="Steps to improve..."></textarea>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button onclick="App.saveCQI()" class="btn btn-danger w-100">Submit CQI Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="delModal">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-warning border-0">
+                    <h5 class="mb-0">Confirm Delete</h5>
+                </div>
+                <div class="modal-body text-center">Delete this item permanently?</div>
+                <div class="modal-footer justify-content-center border-0">
+                    <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button onclick="App.runDelete()" class="btn btn-danger btn-sm">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal fade" id="modal-add-user">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold" id="au-modal-title">Add New User</h5><button class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <div class="mb-3"><label class="small fw-bold text-muted mb-1">Full Name</label><input id="au-name"
+                            type="text" class="form-control" placeholder="Full name"></div>
+                    <div class="mb-3"><label class="small fw-bold text-muted mb-1">Username</label><input id="au-user"
+                            type="text" class="form-control" placeholder="Username"></div>
+                    <div class="mb-3"><label class="small fw-bold text-muted mb-1"
+                            id="au-pass-label">Password</label><input id="au-pass" type="password" class="form-control"
+                            placeholder="Min 6 characters"></div>
+                    <div class="mb-3"><label class="small fw-bold text-muted mb-1">Role</label>
+                        <select id="au-role" class="form-select">
+                            <option value="faculty">Faculty Member</option>
+                            <option value="admin">Administrator / HOD</option>
+                        </select>
+                    </div>
+                    <div id="au-error" class="alert alert-danger py-2 hide" style="font-size:.83rem;border-radius:8px;">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button onclick="Auth.saveUserModal()" class="btn btn-primary w-100" id="au-save-btn">Create
+                        User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- <script type="module" src="db.js"></script> -->
+    <!-- <script type="module" src="db.js"></script> -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, setDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        const fbConfig = {
+            apiKey: "AIzaSyD4iN1dOFmjcW6lAsusqgyTj1sfgSE2AxI",
+            authDomain: "obe-integration-system-d50ae.firebaseapp.com",
+            projectId: "obe-integration-system-d50ae",
+            storageBucket: "obe-integration-system-d50ae.firebasestorage.app",
+            messagingSenderId: "595166072166",
+            appId: "1:595166072166:web:efbffe8bcf3e9029eacca7"
+        };
+        const fbApp = initializeApp(fbConfig);
+        const db = getFirestore(fbApp);
+        const auth = getAuth(fbApp);
+        const secondaryApp = initializeApp(fbConfig, "Secondary");
+        const secondaryAuth = getAuth(secondaryApp);
+        const colRef = (c) => collection(db, c);
+        const docRef = (c, id) => doc(db, c, id);
+        const Data = { depts: [], courses: [], plos: [], clos: [], map: [], assess: [], cqi: [] };
+        const UI = {
+            activeDept: null,
+            sortAsc: true,
+            editId: null,
+            delTarget: null,
+            modalType: '',
+            role: null,
+            currentUser: null
+        };
+        let chartRef = null;
+        const bloomMap = { C1: 'Remember', C2: 'Understand', C3: 'Apply', C4: 'Analyze', C5: 'Evaluate', C6: 'Create' };
+        const USERS_KEY = 'obe_users';
+        const SESSION_KEY = 'obe_session';
+        window.Auth = {
+            _editUserId: null,
+            async getUsers() {
+                try {
+                    const qs = await getDocs(colRef('users'));
+                    return qs.docs.map(d => ({ id: d.id, ...d.data() }));
+                } catch (e) {
+                    console.error(e);
+                    return [];
+                }
+            },
+            async _initDefault() {
+                try {
+                    const r = await createUserWithEmailAndPassword(auth, "admin@obesystem.local", "admin123");
+                    await setDoc(docRef("users", r.user.uid), { name: "Administrator", username: "admin", role: "admin", created: new Date().toLocaleDateString() });
+                    await signOut(auth);
+                } catch (e) { }
+            },
+            switchTab(t) {
+                document.getElementById('tab-login').classList.toggle('hide', t !== 'login');
+                document.getElementById('tab-register').classList.toggle('hide', t !== 'register');
+                document.getElementById('tab-login-btn').classList.toggle('active', t === 'login');
+                document.getElementById('tab-register-btn').classList.toggle('active', t === 'register');
+            },
+            async login() {
+                const u = document.getElementById('login-user').value.trim();
+                const p = document.getElementById('login-pass').value;
+                const err = document.getElementById('login-error');
+                err.classList.add('hide');
+                if (!u || !p) { err.innerText = 'Please fill in all fields.'; err.classList.remove('hide'); return; }
+                document.getElementById('loader').style.display = 'flex';
+                try {
+                    const r = await signInWithEmailAndPassword(auth, u + "@obesystem.local", p);
+                    const userDoc = await getDoc(docRef("users", r.user.uid));
+                    if (userDoc.exists()) {
+                        this._startSession({ id: r.user.uid, ...userDoc.data() });
+                    } else {
+                        throw new Error("User record not found. Contact administrator.");
+                    }
+                } catch (error) {
+                    document.getElementById('loader').style.display = 'none';
+                    err.innerText = error.message || 'Invalid username or password.';
+                    err.classList.remove('hide');
+                }
+            },
+            async register() {
+                const name = document.getElementById('reg-name').value.trim();
+                const u = document.getElementById('reg-user').value.trim();
+                const p = document.getElementById('reg-pass').value;
+                const role = document.getElementById('reg-role').value;
+                const err = document.getElementById('reg-error');
+                const suc = document.getElementById('reg-success');
+                err.classList.add('hide'); suc.classList.add('hide');
+                if (!name || !u || !p) { err.innerText = 'All fields are required.'; err.classList.remove('hide'); return; }
+                if (p.length < 6) { err.innerText = 'Password must be at least 6 characters.'; err.classList.remove('hide'); return; }
+                document.getElementById('loader').style.display = 'flex';
+                try {
+                    const q = await getDocs(colRef("users"));
+                    if (q.docs.find(d => d.data().username === u)) {
+                        throw new Error("Username already taken.");
+                    }
+                    const r = await createUserWithEmailAndPassword(auth, u + "@obesystem.local", p);
+                    await setDoc(docRef("users", r.user.uid), { name, username: u, role, created: new Date().toLocaleDateString() });
+                    suc.innerText = 'Account created! You can now sign in.';
+                    suc.classList.remove('hide');
+                    document.getElementById('reg-name').value = '';
+                    document.getElementById('reg-user').value = '';
+                    document.getElementById('reg-pass').value = '';
+                    await signOut(auth);
+                    document.getElementById('loader').style.display = 'none';
+                } catch (error) {
+                    document.getElementById('loader').style.display = 'none';
+                    err.innerText = error.message || 'Error occurred';
+                    err.classList.remove('hide');
+                }
+            },
+            _startSession(user) {
+                UI.role = user.role;
+                UI.currentUser = user;
+                document.getElementById('auth-view').classList.add('hide');
+                document.getElementById('main-view').classList.remove('hide');
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('user-badge').innerText = user.role === 'admin' ? 'Admin Access' : 'Faculty Access';
+                document.getElementById('sidebar-uname').innerText = user.name || user.username;
+                document.getElementById('sidebar-urole').innerText = user.role === 'admin' ? 'Administrator' : 'Faculty Member';
+                App.refresh();
+            },
+            async logout() {
+                await signOut(auth);
+                location.reload();
+            },
+            checkSession() {
+                return true;
+            },
+            async showAddUserModal(editId = null) {
+                this._editUserId = editId;
+                document.getElementById('au-error').classList.add('hide');
+                if (editId) {
+                    const users = await this.getUsers();
+                    const u = users.find(x => x.id === editId);
+                    if (!u) return;
+                    document.getElementById('au-modal-title').innerText = 'Edit User (Cannot change Auth details)';
+                    document.getElementById('au-save-btn').innerText = 'Save Changes';
+                    document.getElementById('au-pass-label').innerText = 'Password changes currently restricted in Dashboard.';
+                    document.getElementById('au-name').value = u.name;
+                    document.getElementById('au-user').value = u.username;
+                    document.getElementById('au-pass').value = '';
+                    document.getElementById('au-role').value = u.role;
+                    document.getElementById('au-user').disabled = true;
+                    document.getElementById('au-pass').disabled = true;
+                } else {
+                    document.getElementById('au-modal-title').innerText = 'Add New User';
+                    document.getElementById('au-save-btn').innerText = 'Create User';
+                    document.getElementById('au-pass-label').innerText = 'Password';
+                    document.getElementById('au-name').value = '';
+                    document.getElementById('au-user').value = '';
+                    document.getElementById('au-pass').value = '';
+                    document.getElementById('au-role').value = 'faculty';
+                    document.getElementById('au-user').disabled = false;
+                    document.getElementById('au-pass').disabled = false;
+                }
+                new bootstrap.Modal(document.getElementById('modal-add-user')).show();
+            },
+            async saveUserModal() {
+                const name = document.getElementById('au-name').value.trim();
+                const username = document.getElementById('au-user').value.trim();
+                const pass = document.getElementById('au-pass').value;
+                const role = document.getElementById('au-role').value;
+                const err = document.getElementById('au-error');
+                err.classList.add('hide');
+                if (!name || !username) { err.innerText = 'Name and username are required.'; err.classList.remove('hide'); return; }
+
+                if (this._editUserId) {
+                    await updateDoc(docRef("users", this._editUserId), { name, role });
+                } else {
+                    try {
+                        const q = await getDocs(colRef("users"));
+                        if (q.docs.find(d => d.data().username === username)) {
+                            err.innerText = 'Username already taken.';
+                            err.classList.remove('hide');
+                            return;
+                        }
+                        const oldText = document.getElementById('au-save-btn').innerText;
+                        document.getElementById('au-save-btn').innerText = 'Creating...';
+                        document.getElementById('au-save-btn').disabled = true;
+
+                        const r = await createUserWithEmailAndPassword(secondaryAuth, username + "@obesystem.local", pass);
+                        await setDoc(docRef("users", r.user.uid), { name, username, role, created: new Date().toLocaleDateString() });
+                        await signOut(secondaryAuth);
+
+                        document.getElementById('au-save-btn').innerText = oldText;
+                        document.getElementById('au-save-btn').disabled = false;
+                    } catch (error) {
+                        document.getElementById('au-save-btn').innerText = 'Create User';
+                        document.getElementById('au-save-btn').disabled = false;
+                        err.innerText = error.message || 'Error occurred';
+                        err.classList.remove('hide');
+                        return;
+                    }
+                }
+                bootstrap.Modal.getInstance(document.getElementById('modal-add-user')).hide();
+                await App.renderUsersTable();
+            },
+            async deleteUser(id) {
+                if (UI.currentUser && UI.currentUser.id === id) { alert("You cannot delete your own account."); return; }
+                if (!confirm('Delete this user permanently ? ')) return;
+                await deleteDoc(docRef("users", id));
+                await App.renderUsersTable();
+            }
+        };
+        // ─── APP ─── 
+        window.App = {
+            init: async function () {
+                onAuthStateChanged(auth, async (user) => {
+                    if (user && user.uid) {
+                        try {
+                            const userDoc = await getDoc(docRef("users", user.uid));
+                            if (userDoc.exists()) {
+                                Auth._startSession({ id: user.uid, ...userDoc.data() });
+                            } else {
+                                await signOut(auth);
+                            }
+                        } catch(err) {
+                            await signOut(auth);
+                        }
+                    } else {
+                        document.getElementById('loader').style.display = 'none';
+                        document.getElementById('auth-view').classList.remove('hide');
+                        document.getElementById('main-view').classList.add('hide');
+                    }
+                });
+
+                ['departments', 'courses', 'plos', 'clos', 'mappings', 'cqi', 'assessments', 'users'].forEach(c => {
+                    onSnapshot(colRef(c), s => {
+                        const key = c === 'departments' ? 'depts' : (c === 'mappings' ? 'map' : (c === 'assessments' ? 'assess' : c));
+                        Data[key] = s.docs.map(d => ({ id: d.id, ...d.data() }));
+                        this.refresh();
+                    });
+                });
+                const vt = document.getElementById('tab-visual-trigger');
+                if (vt) vt.addEventListener('shown.bs.tab', () => this.renderMatrix());
+            }, nav(p) {
+                if (window.innerWidth <
+                    768) this.toggleMenu();
+                document.querySelectorAll('[id^="page-"]').forEach(e => e.classList.add('hide'));
+                document.querySelectorAll('.nav-item-link').forEach(e => e.classList.remove('active'));
+                document.getElementById(`page-${p}`).classList.remove('hide');
+                const navEl = document.getElementById(`nav-${p}`);
+                if (navEl)
+                    navEl.classList.add('active');
+                const titles = { dashboard: 'Dashboard', curriculum: 'Curriculum', mapping: 'Mapping', assessment: 'Assessments', cqi: 'CQI Reports', users: 'User Management' };
+                document.getElementById('mob-title').innerText = titles[p] || 'OBE Suite';
+                if (p === 'dashboard') this.renderDash();
+                if (p === 'mapping') {
+                    this.renderMap();
+                    this.renderMatrix();
+                }
+                if (p === 'users') this.renderUsersTable();
+            }, toggleMenu() {
+                document.getElementById('sidebar').classList.toggle('active');
+                document.querySelector('.overlay').classList.toggle('active');
+            }, toggleSort() {
+                UI.sortAsc = !UI.sortAsc;
+                document.getElementById('btn-sort').innerText = UI.sortAsc ? "Sort: Oldest First ⬇" : "Sort: Newest First ⬆";
+                this.renderHist();
+            }, changeDept() {
+                UI.activeDept = document.getElementById('global-dept-select').value;
+                const dept = Data.depts.find(d => d.id === UI.activeDept);
+                const label = dept ? dept.name : 'Select Dept';
+                document.getElementById('dash-dept-label').innerText = label;
+                document.getElementById('mob-dept').innerText = label;
+                this.refresh();
+            }, showModal(t, id = null) {
+                if (t === 'dept') { new bootstrap.Modal(document.getElementById('modal-dept')).show(); return; }
+                if (!UI.activeDept) {
+                    alert("Select a Department from the sidebar first!"); return;
+                } UI.modalType = t; UI.editId = id; const b = document.getElementById('modalBody'), h = document.getElementById('modalTitle'); let ht = ''; if (t === 'course') {
+                    h.innerText = id ? 'Edit Course' : 'Add Course'; const d = id ? Data.courses.find(x => x.id === id) : { code: '', name: '', credits: '' }; ht = ` <label class="small text-muted fw-bold mb-1"> Course Code </label> <input id="i1" class="form-control mb-2" placeholder="e.g. CS101" value="${d.code}"><label class="small text-muted fw-bold mb-1">Course Name</label> <input id="i2"
+                class="form-control mb-2"
+                placeholder="Full course name"
+                value="${d.name}"> <label class="small text-muted fw-bold mb-1"> Credit Hours </label><input id="i3" class="form-control" type="number" placeholder="3" value="${d.credits}">`;
+                } else if (t === 'plo') {
+                    h.innerText = id ? 'Edit PLO' : 'Add PLO'; const d = id ? Data.plos.find(x => x.id === id) : { code: '', desc: '' }; ht = ` <label class="small text-muted fw-bold mb-1"> PLO ID </label><input id="i1" class="form-control mb-2" placeholder="PLO-1" value="${d.code}"><label class="small text-muted fw-bold mb-1">Description</label> <textarea id="i2"
+                        class="form-control"
+                        rows="3"
+                        placeholder="PLO description..."> ${d.desc} </textarea>`;
+                } else if (t === 'clo') {
+                    h.innerText = id ? 'Edit CLO' : 'Add CLO'; const d = id ? Data.clos.find(x => x.id === id) : { courseId: '', level: 'C1', code: '', desc: '' }; const crs = this.getFiltered('courses').map(c => ` <option value="${c.id}"
+                            ${c.id === d.courseId ? 'selected' : ''} > ${c.code} </option>`).join(''); const lv = Object.keys(bloomMap).map(l => ` <option value="${l}"
+                                ${l === d.level ? 'selected' : ''} > ${l}–
+                            ${bloomMap[l]} </option>`).join(''); ht = ` <label class="small text-muted fw-bold mb-1"> Course </label><select id="i1" class="form-select mb-2">${crs}</select> <label class="small text-muted fw-bold mb-1"> Bloom 's Level</label><select id="i2" class="form-select mb-2">${lv}</select> <label class="small text-muted fw-bold mb-1"> CLO Code </label><input id="i3" class="form-control mb-2" placeholder="CLO-1" value="${d.code}"><label class="small text-muted fw-bold mb-1">Description</label> <textarea id="i4"
+                                        class="form-control"
+                                        rows="2"
+                                        placeholder="CLO description..."> ${d.desc} </textarea>`;
+                } b.innerHTML = ht; new bootstrap.Modal(document.getElementById('mainModal')).show();
+            }, addDept: async function () {
+                const n = document.getElementById('in-dept-name').value.trim();
+                if (n) {
+                    await addDoc(colRef('departments'), { name: n });
+                    document.getElementById('in-dept-name').value = '';
+                }
+            }, deleteDept: async function (id) { if (confirm("Delete this department?")) await deleteDoc(doc(db, 'departments', id)); },
+            getFiltered(key) {
+                if (!UI.activeDept) return [];
+                if (key === 'courses' || key === 'plos') return Data[key].filter(x => x.deptId === UI.activeDept);
+                if (key === 'clos') {
+                    const ids = Data.courses.filter(c => c.deptId === UI.activeDept).map(c => c.id);
+                    return Data.clos.filter(x => ids.includes(x.courseId));
+                }
+                if (key === 'map') { const ids = this.getFiltered('clos').map(c => c.id); return Data.map.filter(x => ids.includes(x.cloId)); }
+                if (key === 'assess') {
+                    const ids = this.getFiltered('clos').map(c => c.id);
+                    return Data.assess.filter(x => ids.includes(x.cloId));
+                }
+                if (key === 'cqi') { const ids = this.getFiltered('assess').map(a => a.id); return Data.cqi.filter(x => ids.includes(x.assessId)); }
+                return [];
+            }, refresh() {
+                const isAdmin = UI.role === 'admin';
+                const
+                    dSel = document.getElementById('global-dept-select'),
+                    cur = dSel.value;
+                dSel.innerHTML = '<option value="">Select Department...</option>' + Data.depts.map(d => ` <option value="${d.id}"> ${d.name} </option>`).join(''); if (cur) dSel.value = cur; const deptListHTML = Data.depts.map(d => ` <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent border-bottom py-2">
+                                <span> ${d.name} </span> ${isAdmin ? ` <i class = "fas fa-trash text-danger icon-btn"
+                onclick = "App.deleteDept('${d.id}')"> </i>` : ''} </li> `).join(''); document.getElementById('dept-list-manage').innerHTML = deptListHTML; const vis = (id, show) => { const el = document.getElementById(id); if (el) el.style.display = show ? '' : 'none'; }; vis('btn-add-dept', isAdmin); vis('btn-add-course', isAdmin);
+                vis('btn-add-plo', isAdmin);
+                vis('btn-add-clo', isAdmin);
+                vis('map-actions', isAdmin);
+                vis('nav-users', isAdmin);
+                this.renderTables();
+                this.populateDrops();
+                this.renderMap();
+                this.renderHist();
+                this.renderCQI();
+                this.renderDash();
+                if (document.getElementById('map-visual')?.classList.contains('active')) this.renderMatrix();
+            }, renderTables() {
+                const isAdmin = UI.role === 'admin';
+                const act = (type, id) => isAdmin ? ` <td> <i class="fas fa-edit text-primary icon-btn me-2"
+                                    onclick="App.showModal('${type}','${id}')"> </i><i class="fas fa-trash text-danger icon-btn" onclick="App.prepDelete('${type}s','${id}')"></i> </td>` : ` <td> <span class="text-muted small"> <i class="fas fa-lock"> </i></span> </td>`;
+                const crs = this.getFiltered('courses');
+                document.getElementById('tbl-courses').innerHTML = crs.map(c => `
+                            <tr>
+                                <td><b>${c.code}</b></td>
+                                <td>${c.name}</td>
+                                <td>${c.credits}</td>${act('course', c.id)}</tr>`).join('') || ` <tr>
+            <td colspan="4"
+                class="text-center text-muted py-3"> No courses </td> </tr> `; const plos = this.getFiltered('plos'); document.getElementById('tbl-plos').innerHTML = plos.map(p => ` <tr>
+                                <td> <b> ${p.code} </b></td>
+                                <td> ${p.desc} </td>${act('plo', p.id)}</tr> `).join('') || `
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-3">No PLOs</td>
+                            </tr>`; const clos = this.getFiltered('clos'); document.getElementById('tbl-clos').innerHTML = clos.map(cl => {
+                    const c = Data.courses.find(x => x.id === cl.courseId); const lvl = cl.level || 'C1'; return ` <tr>
+                                <td> ${cl.code} </td> <td> <span class="badge-${lvl}"> ${lvl} </span> <small class="text-muted">${bloomMap[lvl] || ''}</small> </td> <td> ${cl.desc} </td> <td> ${c ? c.code : '?'} </td>${act('clo', cl.id)}</tr> `;
+                }).join('') || `
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-3">No CLOs</td>
+                            </tr>`;
+            }, populateDrops() {
+                const crs = this.getFiltered('courses'); const ops = crs.map(c => ` <option value = "${c.id}"> ${c.code}–
+                                ${c.name} </option> `).join('');['select-map-course', 'select-matrix-course', 'in-assess-course'].forEach(id => { const el = document.getElementById(id); if (!el) return; const v = el.value; el.innerHTML = '<option value="">Select Course...</option>' + ops; if (v) el.value = v; });
+            }, renderMap() {
+                const isAdmin = UI.role === 'admin'; const cid = document.getElementById('select-map-course').value; const tbody = document.getElementById('tbl-mapping'); if (!cid) { tbody.innerHTML = ` <tr><td colspan=\"4\" class=\"text-center text-muted py-3\"> Select a course above </td> </tr> `; return; } const cls = this.getFiltered('clos').filter(x => x.courseId === cid); const pls = this.getFiltered('plos'); if (!cls.length) { tbody.innerHTML = ` <tr><td colspan=\"4\" class=\"text-center text-muted py-3\"> No CLOs for this course </td> </tr> `; return; } tbody.innerHTML = cls.map(cl => {
+                    const m = Data.map.find(x => x.cloId === cl.id); const pid = m ? m.ploId : ''; let d; if (isAdmin) {
+                        d = ` <select class = "form-select form-select-sm"
+        onchange = "App.setMap('${cl.id}',this.value)"> <option value=""> Unmapped </option>`; pls.forEach(p => d += ` <option value = "${p.id}" ${p.id === pid ? 'selected' : ''}> ${p.code}</option> `); d += ` </select> `;
+                    }
+                    else {
+                        const p = pls.find(x => x.id === pid);
+                        d = p ? `<span class="fw-bold"> ${p.code}</span> ` : ` <span class="text-muted small"> Unmapped</span> `;
+                    }
+                    const st = pid ? `<span class="badge bg-success bg-opacity-75"> <i class="fas fa-check-circle me-1"></i>Mapped</span> ` : `
+            <span class="text-muted small"> Pending</span> `;
+                    const clr = (pid && isAdmin) ? `<i class="fas fa-trash text-danger icon-btn" onclick = "App.clearMap('${cl.id}')"></i> ` : '-';
+                    return `
+            <tr>
+                    <td><strong>${cl.code}</strong><br><small class="text-muted">${cl.desc}</small></td>
+                    <td>${d}</td>
+                    <td>${st}</td>
+                    <td>${clr}</td>
+                </tr> `;
+                }).join('');
+            }, renderMatrix() {
+                const cid = document.getElementById('select-matrix-course').value;
+                const hd = document.getElementById('matrix-head'),
+                    bd = document.getElementById('matrix-body'),
+                    lg = document.getElementById('matrix-legend');
+                if (!cid || !this.getFiltered('plos').length) {
+                    hd.innerHTML = '';
+                    bd.innerHTML = ` <tr><td class="text-muted p-3"> Select a course </td> </tr> `; lg.innerHTML = ''; return;
+                } const sPlos = [...this.getFiltered('plos')].sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true })); let h = ` <tr>
+            <th style="min-width:160px"> CLO </th>`; sPlos.forEach(p => h += ` <th style = "min-width:65px"
+        title = "${p.desc}"> ${p.code} </th> `); h += '</tr> '; hd.innerHTML = h; const cls = this.getFiltered('clos').filter(c => c.courseId === cid); bd.innerHTML = cls.map(cl => {
+                    let r = ` <tr>
+            <td class="text-start"> <strong> ${cl.code}[${cl.level || 'C1'}] </strong><br><small class="text-muted">${cl.desc}</small> </td>`; const m = Data.map.find(x => x.cloId === cl.id); sPlos.forEach(p => {
+                        r += ` <td class = "matrix-cell"> ${(m && m.ploId === p.id) ? '<i class="fas fa-check-circle text-success"></i>' : '–'
+                            } </td> `;
+                    }); return r + '</tr> ';
+                }).join('') || ` <tr><td colspan=\"99\" class=\"text-center text-muted py-3\"> No CLOs for this course </td> </tr> `; lg.innerHTML = ` <strong class="d-block mb-2"> PLO Reference </strong>` + sPlos.map(p => ` <div class="mb-1"> <strong> ${p.code}: </strong> ${p.desc}</div> `).join('');
+            }, renderHist() {
+                const d = this.getFiltered('assess'); const s = [...d].sort((a, b) => UI.sortAsc ? a.timestamp.localeCompare(b.timestamp) : b.timestamp.localeCompare(a.timestamp));
+                document.getElementById('tbl-history').innerHTML = s.map(a => {
+                    const c = Data.clos.find(x => x.id === a.cloId); return ` <tr>
+                    <td> ${a.dateStr} </td> <td class="fw-bold"> ${a.title} </td> <td> ${c ? c.code : '?'} </td> <td class="fw-bold"> ${a.percent} % </td> <td> <span class="badge ${a.status === 'Attained' ? 'bg-success' : 'bg-danger'} bg-opacity-75"> ${a.status} </span></td>
+                    <td> <i class="fas fa-trash text-danger icon-btn"
+                            onclick="App.prepDelete('assessments','${a.id}')"> </i></td>
+                </tr> `;
+                }).join('') || ` <tr><td colspan=\"6\" class=\"text-center text-muted py-3\"> No assessments yet </td> </tr> `;
+            }, renderCQI() {
+                const isAdmin = UI.role === 'admin'; const c = this.getFiltered('cqi'); const pending = c.filter(x => x.status !== 'Resolved'), resolved = c.filter(x => x.status === 'Resolved'); document.getElementById('cqi-list').innerHTML = [...pending, ...resolved].map(x => {
+                    const a = Data.assess.find(y => y.id === x.assessId);
+                    const cl = a ? Data.clos.find(z => z.id === a.cloId) : null;
+                    const ok = x.status === 'Resolved';
+                    const btn = ok ? `<span class="badge bg-light text-success border"> RESOLVED</span> ` : (isAdmin ? `
+            <button class="btn btn-sm btn-outline-success" onclick = "App.resolveCQI('${x.id}')"> Resolve</button> ` : ` <span class="badge bg-light text-danger border"> PENDING</span> `);
+                    return `
+                <div class="col-12">
+                    <div class="card border-${ok ? 'success' : 'danger'} border-start border-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                                <h6 class="fw-bold ${ok ? 'text-success' : 'text-danger'} mb-0">${cl ? cl.code : 'CLO'}: ${a ? a.title : 'Assessment'} <span class="text-muted small">(${a ? a.percent : 0}%)</span></h6>${btn}</div>
+                            <p class="small text-muted mb-1"><strong>Cause:</strong> ${x.reason}</p>
+                            <p class="small text-muted mb-0"><strong>Plan:</strong> ${x.plan}</p>
+                            <div class="text-end mt-2"><i class="fas fa-trash text-muted icon-btn small" onclick="App.prepDelete('cqi','${x.id}')"></i></div>
+                        </div>
+                    </div>
+                </div> `;
+                }).join('') || ` <div class=\"col-12 text-center p-5 text-muted\"> <i class=\"fas fa-check-circle fa-2x mb-2 text-success d-block\"> </i>No CQI Issues Found</div> `;
+            }, renderDash() {
+                const c = this.getFiltered('courses'), p = this.getFiltered('plos'), a = this.getFiltered('assess'), q = this.getFiltered('cqi').filter(x => x.status !== 'Resolved');
+                document.getElementById('stat-courses').innerText = c.length;
+                document.getElementById('stat-plos').innerText = p.length;
+                document.getElementById('stat-assess').innerText = a.length;
+                document.getElementById('stat-cqi').innerText = q.length;
+                document.getElementById('alert-list').innerHTML = q.length ? q.slice(0, 5).map(() => `
+            <li class="list-group-item text-danger border-0 ps-0 py-1 small"> <i class="fas fa-exclamation-triangle me-1"></i>Action Required</li> `).join('') : `
+                <li class="list-group-item text-success border-0 ps-0"> <i class="fas fa-check-circle me-1"></i>All systems clear</li> `;
+                const sPlos = [...p].sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true }));
+                const vals = sPlos.map(pl => {
+                    let t = 0,
+                        n = 0;
+                    a.forEach(as => {
+                        const m = Data.map.find(x => x.cloId === as.cloId);
+                        if (m && m.ploId === pl.id && as.percent) {
+                            t
+                                += parseFloat(as.percent);
+                            n++;
+                        }
+                    });
+                    return n ? parseFloat((t / n).toFixed(1)) : 0;
+                });
+                if (chartRef) chartRef.destroy();
+                chartRef = new Chart(document.getElementById('ploChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: sPlos.map(x => x.code),
+                        datasets: [{
+                            label: 'Avg %', data: vals, backgroundColor: vals.map(v => v >= 50 ? '#10b981' : '#ef4444'), borderRadius: 6
+                        }]
+                    }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, grid: { borderDash: [5, 5] } }, x: { grid: { display: false } } } }
+                });
+            },
+            renderUsersTable: async function () {
+                const users = await Auth.getUsers();
+                const isAdmin = UI.role === 'admin';
+                document.getElementById('tbl-users-body').innerHTML = users.map((u, i) => {
+                    const pill = u.role === 'admin' ? `<span class="role-pill pill-admin"> Admin</span> ` : `
+            <span class="role-pill pill-faculty"> Faculty</span> `; const isSelf = UI.currentUser && UI.currentUser.id === u.id; const actions = isAdmin ? `
+                <button class="btn btn-sm btn-outline-primary me-1" onclick = "Auth.showAddUserModal('${u.id}')"> <i class="fas fa-edit"></i></button> ${!isSelf ? `<button class="btn btn-sm btn-outline-danger" onclick="Auth.deleteUser('${u.id}')"><i class="fas fa-trash"></i></button>`
+                            : `
+                        <span class="text-muted small ms-1">(you)</span>`} ` : `
+            <span class="text-muted small"> <i class="fas fa-lock"></i></span> `; return `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${u.name || '—'}</td>
+                    <td><code>${u.username}</code></td>
+                    <td>${pill}</td>
+                    <td>${u.created || '—'}</td>
+                    <td>${actions}</td>
+                </tr> `;
+                }).join('') || `
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-3">No users found</td>
+                </tr>`;
+            }, saveData: async function () {
+                const t = UI.modalType, id = UI.editId; let d = {}; if (t === 'course') {
+                    d = {
+                        deptId: UI.activeDept, code: document.getElementById('i1').value, name: document.getElementById('i2').value, credits:
+                            document.getElementById('i3').value
+                    };
+                } else if (t === 'plo') { d = { deptId: UI.activeDept, code: document.getElementById('i1').value, desc: document.getElementById('i2').value }; } else if (t === 'clo') {
+                    d = {
+                        courseId: document.getElementById('i1').value,
+                        level: document.getElementById('i2').value, code: document.getElementById('i3').value, desc: document.getElementById('i4').value
+                    };
+                } if (id) await updateDoc(docRef(t + 's', id), d); else await addDoc(colRef(t + 's'), d); bootstrap.Modal.getInstance(document.getElementById('mainModal')).hide();
+            }, prepDelete(c, id) { UI.delTarget = { c, id }; new bootstrap.Modal(document.getElementById('delModal')).show(); }, runDelete: async function () { if (UI.delTarget) { await deleteDoc(docRef(UI.delTarget.c, UI.delTarget.id)); UI.delTarget = null; bootstrap.Modal.getInstance(document.getElementById('delModal')).hide(); } },
+            setMap: async function (cid, pid) {
+                const ex = Data.map.find(m => m.cloId === cid); if (ex) { pid === '' ? await deleteDoc(docRef('mappings', ex.id)) : await updateDoc(docRef('mappings', ex.id), { ploId: pid }); } else if (pid !== '') await
+                    addDoc(colRef('mappings'), { cloId: cid, ploId: pid });
+            }, clearMap: async function (cid) { const ex = Data.map.find(m => m.cloId === cid); if (ex) await deleteDoc(docRef('mappings', ex.id)); }, filterCLOs() {
+                const cid = document.getElementById('in-assess-course').value; const
+                    flt = Data.clos.filter(x => x.courseId === cid); document.getElementById('in-assess-clo').innerHTML = flt.map(c => `
+            <option value = "${c.id}"> ${c.code} – ${c.desc}</option> `).join('');
+            }, addAssessment: async function (e) {
+                e.preventDefault(); const tot = parseInt(document.getElementById('in-assess-total').value), pas = parseInt(document.getElementById('in-assess-pass').value);
+                if (pas > tot) { alert("Passed cannot exceed Total Students"); return; } const pct = ((pas / tot) * 100).toFixed(1), st = pct >= 50 ? 'Attained' : 'Failed'; const ref = await addDoc(colRef('assessments'), {
+                    title: document.getElementById('in-assess-title').value, cloId: document.getElementById('in-assess-clo').value, total: tot, passed: pas, percent: pct, status: st, timestamp: new
+                        Date().toISOString(), dateStr: new Date().toLocaleDateString()
+                }); e.target.reset(); if (st === 'Failed') { document.getElementById('cqi-ref').value = ref.id; new bootstrap.Modal(document.getElementById('cqiModal')).show(); } else
+                    alert("Assessment saved successfully!");
+            }, saveCQI: async function () { await addDoc(colRef('cqi'), { assessId: document.getElementById('cqi-ref').value, reason: document.getElementById('cqi-cause').value, plan: document.getElementById('cqi-plan').value, status: 'Pending' }); bootstrap.Modal.getInstance(document.getElementById('cqiModal')).hide(); },
+            resolveCQI: async function (id) { await updateDoc(docRef('cqi', id), { status: 'Resolved' }); }
+        }; window.onload = () => App.init();
+
+    </script>
+
+</body>
+
+</html>
